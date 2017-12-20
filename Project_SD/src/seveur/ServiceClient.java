@@ -1,5 +1,6 @@
 package seveur;
 
+import seveur.Traitement;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,17 +13,19 @@ public class ServiceClient implements Runnable{
 	
 	private static final CharSequence finish = "finish";
 	private static final CharSequence add = "add";
+	private static final CharSequence select = "select";
 	Socket socket;
 	int port;
 	ObjetEnVente objetEnVente;
 	
 
-	public ServiceClient(Socket socket, int port, ObjetEnVente obj) {
+	public ServiceClient(Socket socket, int port) {
 		this.socket=socket;
 		this.port=port;
-		objetEnVente=obj;
 	}
 
+	public void setObjetEnVente(ObjetEnVente obj) {objetEnVente=obj;}
+	
 	@Override
 	public void run() {
 		try {
@@ -55,7 +58,7 @@ public class ServiceClient implements Runnable{
            * est Bloquante readline retourne null si il y a souci avec la
            * connexion On s arrete aussisi connexion_non_terminee est vraie
            */
-          ma_sortie.format("Bonjour %s j attends tes donnees  \n",clientName);
+          ma_sortie.format("Bonjour %s j attends tes donnees  \n \r",clientName);
           while  (  (message_lu = flux_entrant.readLine()) != null)  {
         	  	System.out.println("user :");
                   System.out.format("%d: ->  [%s]\n", line_num, message_lu);
@@ -71,8 +74,10 @@ public class ServiceClient implements Runnable{
                   }
                   if (message_lu.contains(add)) {
                 	  boolean operation=false;
-                	  while(!operation) {
-                		  String[] parts=message_lu.split(" ");
+                	 // while(!operation) {
+                		 // String chaine=Traitement.oneSpace(message_lu.toCharArray(),0,message_lu.length()).toString();
+                		  // String[] parts=chaine.split(" ");
+                	  	  String[] parts=message_lu.split(" ");
                 		  String identifiant = parts[0];
                 		  String command = parts[1];
                 		  String value = parts[2]; 
@@ -80,11 +85,22 @@ public class ServiceClient implements Runnable{
                 		  if(objetEnVente.add(valueFormated, identifiant)) {
                 			  //System.out.format("%d: ->  [%s]\n", line_num, message_lu);
                 			  System.out.println(identifiant+" a rencheri a " + value );
+                			  ma_sortie.format("\n\r Vous avez rencheri de %s \n\r",value);
+                			  //operation=true;
+                		  }else {
+                			  ma_sortie.format("\n\r Vous ne pouvez pas rencherir %s \n\r",value);
                 		  }
                 		  
-                	  }
+                	 // }
      
-              }
+                  	}
+                  if(message_lu.contains(select)) {
+                	  String[] parts=message_lu.split(" ");
+            		  String identifiant = parts[0];
+            		  String command = parts[1];
+            		  String value = parts[2]; 
+                  }
+                  
               if(Thread.currentThread().isInterrupted()) {
   				terminer(la_connection);
   				System.out.println("Je ferme la socket");

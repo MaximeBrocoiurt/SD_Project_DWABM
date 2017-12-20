@@ -12,7 +12,8 @@ import java.io.*;
 
 
 public class Serveur {
-		
+	ArrayList<ObjetEnVente> tableau = new ArrayList<ObjetEnVente>(); 
+
 	ServerSocket mon_connecteur;  // serveur de socket du serveur amélioré
 	
 	/* Port d'écoute */
@@ -21,18 +22,17 @@ public class Serveur {
 	
 	ArrayList<Thread> listeThread= new ArrayList<Thread>();
 
-	public Serveur(int cport) throws IOException {
+	public Serveur(int cport, ArrayList<ObjetEnVente> tab) throws IOException {
 		port = cport;
 		this.mon_connecteur = new ServerSocket(port); 		//Creation du gestionnaire de socket 
 		System.out.format("Serveur lancé sur le  port %d\n", port);
+		tableau=tab;
 	}
 	
 	public void run() {
 		int compteur=0;
 		Socket ma_connection = null;  		// file instanciée pour commmuniquer avec le client
-		
-		ObjetEnVente objet = new ObjetEnVente("Lambo", 10000, "");
-		
+			
 		while (listeThread.size()<5) {
 			// // /* Attente bloquante connexion */
 			try {
@@ -41,7 +41,7 @@ public class Serveur {
 				System.out.println("Impossible de détacher une socket  : " + e);
 				System.exit(-1);
 			}
-			ServiceClient serviceClient = new ServiceClient(ma_connection, ma_connection.getPort(), objet);
+			ServiceClient serviceClient = new ServiceClient(ma_connection, ma_connection.getPort());
 			Thread tache = new Thread(serviceClient);
 			tache.start();
 			if(tache!=null) {
@@ -75,12 +75,11 @@ public class Serveur {
 		interrompreServer();
 	}
 		
-	public static void main(String[] args) throws IOException {
-		/* On crée puis lance le serveur */
+	/*public static void main(String[] args) throws IOException {
 		Serveur Mon_serveur = null;
 		Mon_serveur = new Serveur(12000);
 		Mon_serveur.run();
-	}
+	}*/
 	
 	
 	public void interrompreServer() {
