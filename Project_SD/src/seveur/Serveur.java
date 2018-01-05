@@ -1,33 +1,37 @@
 package seveur;
 
-/* On  importe les  classes  Reseau, Entrees Sorties, Utilitaires */
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import enchere.ObjetEnVente;
+import enchere.PlaceMarchande;
 
 import java.io.*;
 
 
 public class Serveur {
-	ArrayList<ObjetEnVente> tableau = new ArrayList<ObjetEnVente>(); 
-
-	ServerSocket mon_connecteur;  // serveur de socket du serveur amélioré
-	
-	/* Port d'écoute */
+	PlaceMarchande placeMarchande;
+	ServerSocket mon_connecteur; 	
 	private int port;
-	final String Finish = "" + (char) 4;  //Signal de fin de connection aussi nommé EOT  ctrl-d
+
+
+	final String Finish = "" + (char) 4;
 	
 	ArrayList<Thread> listeThread= new ArrayList<Thread>();
 
-	public Serveur(int cport, ArrayList<ObjetEnVente> tab) throws IOException {
+	public Serveur(int cport, PlaceMarchande place) throws IOException {
 		port = cport;
-		this.mon_connecteur = new ServerSocket(port); 		//Creation du gestionnaire de socket 
+		this.mon_connecteur = new ServerSocket(port);
+		placeMarchande=place;
+		
 		System.out.format("Serveur lancé sur le  port %d\n", port);
-		tableau=tab;
+		
+
 	}
+	
+
 	
 	public void run() {
 		int compteur=0;
@@ -41,7 +45,7 @@ public class Serveur {
 				System.out.println("Impossible de détacher une socket  : " + e);
 				System.exit(-1);
 			}
-			ServiceClient serviceClient = new ServiceClient(ma_connection, ma_connection.getPort());
+			ServiceClient serviceClient = new ServiceClient(ma_connection, ma_connection.getPort(), placeMarchande);
 			Thread tache = new Thread(serviceClient);
 			tache.start();
 			if(tache!=null) {
