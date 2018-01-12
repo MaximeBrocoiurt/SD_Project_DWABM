@@ -15,7 +15,7 @@ public class SimpleServer  {
 		Socket s = ss.accept();
 		InputStream is = s.getInputStream();
 		ObjectInputStream ois = new ObjectInputStream(is);
-		testobject to = (testobject)ois.readObject();
+		Message to = (Message)ois.readObject();
 		
 		if (to!=null){System.out.println(to.toString());}
 		String ligne;
@@ -33,6 +33,8 @@ public class SimpleServer  {
 				ss.close();
 			}
 		}
+		
+		
 		
 	
 		

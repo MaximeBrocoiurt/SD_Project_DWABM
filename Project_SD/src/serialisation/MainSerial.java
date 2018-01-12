@@ -1,12 +1,14 @@
-package enchere;
+package serialisation;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
+import enchere.ObjetEnVente;
+import enchere.PlaceMarchande;
 import serveur.Serveur;
 
-public class Main {
-	public static void main(String[] args) {
+public class MainSerial {
+	public static void main(String[] args) throws InterruptedException {
 		ArrayList<ObjetEnVente> listObjetEnVente = new ArrayList<ObjetEnVente>(); 
 		ObjetEnVente objet = new ObjetEnVente("lambo", 0, "");
 		ObjetEnVente objet2 = new ObjetEnVente("velo", 0, "");
@@ -15,15 +17,19 @@ public class Main {
 		listObjetEnVente.add(objet2);
 		listObjetEnVente.add(objet3);
 		
-		Serveur Mon_serveur = null;
+		ServeurSerial Mon_serveur = null;
 		try {
-			Mon_serveur = new Serveur(12000, new PlaceMarchande(listObjetEnVente));
+			Mon_serveur = new ServeurSerial(12000, new PlaceMarchande(listObjetEnVente));
+			Mon_serveur.run();
+			
+			
+		
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		Mon_serveur.run();
+		
 		
 	
 	}
-	
 }
